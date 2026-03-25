@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { getPlanFromMetadata, canSendMessage } from "@/lib/subscription";
 import type { Campaign, Message } from "@/lib/types";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -97,6 +99,25 @@ export async function POST(request: Request) {
 
     if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "your_gemini_api_key_here") {
       return new Response("⚠️ Gemini API key not configured. Add your GEMINI_API_KEY to .env.local", { status: 200 });
+    }
+
+    // Check subscription limits
+    const { userId } = await auth();
+    if (userId) {
+      const user = await currentUser();
+      const plan = getPlanFromMetadata((user?.publicMetadata ?? {}) as Record<string, unknown>);
+
+      // Count today's messages from the messages array passed in
+      const todayMsgs = (messages || []).filter((m: Message) => {
+        return m.role === "dm" && new Date(m.timestamp).toDateString() === new Date().toDateString();
+      }).length;
+
+      if (type === "session" && !canSendMessage(plan, todayMsgs)) {
+        return new Response(
+          `*You've reached your daily limit of ${plan.limits.aiMessagesPerDay} AI messages on the ${plan.name} plan. [Upgrade your plan](/pricing) to continue.*`,
+          { status: 200 }
+        );
+      }
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });

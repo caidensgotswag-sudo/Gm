@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { getCampaigns, deleteCampaign } from "@/lib/storage";
+import { getPlan, canCreateCampaign } from "@/lib/subscription";
 import type { Campaign } from "@/lib/types";
+import type { PlanId } from "@/lib/subscription";
 
 export default function CampaignsPage() {
+  const { user } = useUser();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const planId = (user?.publicMetadata?.planId as PlanId) ?? "free";
+  const plan = getPlan(planId);
 
   useEffect(() => {
     setCampaigns(getCampaigns());
@@ -18,6 +24,8 @@ export default function CampaignsPage() {
     setCampaigns(getCampaigns());
   }
 
+  const canAdd = canCreateCampaign(plan, campaigns.length);
+
   return (
     <main className="min-h-screen px-4 py-10" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 100%)" }}>
       <div className="max-w-4xl mx-auto">
@@ -26,9 +34,37 @@ export default function CampaignsPage() {
             <Link href="/" className="text-gold opacity-60 hover:opacity-100 transition-opacity">← Home</Link>
             <h1 className="text-3xl font-bold text-gold">My Campaigns</h1>
           </div>
-          <Link href="/campaign/new">
-            <button className="btn-primary">⚔️ New Campaign</button>
-          </Link>
+          <div className="flex items-center gap-3">
+            {canAdd ? (
+              <Link href="/campaign/new">
+                <button className="btn-primary">⚔️ New Campaign</button>
+              </Link>
+            ) : (
+              <Link href="/pricing">
+                <button className="btn-primary">⚡ Upgrade to Add More</button>
+              </Link>
+            )}
+            <Link href="/account"><UserButton /></Link>
+          </div>
+        </div>
+
+        {/* Plan limit warning */}
+        {!canAdd && (
+          <div className="mb-6 p-4 rounded fade-in" style={{ background: "rgba(139,0,0,0.2)", border: "1px solid rgba(139,0,0,0.5)" }}>
+            <p className="text-sm" style={{ color: "rgba(245,230,200,0.7)" }}>
+              You&apos;ve reached the <span className="text-gold font-bold">{plan.name}</span> plan limit of{" "}
+              <strong>{plan.limits.campaigns} campaign{plan.limits.campaigns !== 1 ? "s" : ""}</strong>.{" "}
+              <Link href="/pricing" className="underline text-gold">Upgrade your plan</Link> to add more.
+            </p>
+          </div>
+        )}
+
+        {/* Plan badge */}
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-xs px-2 py-1 rounded" style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.2)", color: "rgba(201,168,76,0.7)" }}>
+            {plan.name} Plan &bull; {campaigns.length}/{plan.limits.campaigns === -1 ? "∞" : plan.limits.campaigns} campaigns
+          </span>
+          <Link href="/pricing" className="text-xs" style={{ color: "rgba(245,230,200,0.3)" }}>Upgrade →</Link>
         </div>
 
         {campaigns.length === 0 ? (

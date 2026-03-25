@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useUser, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
+  const { user, isLoaded } = useUser();
+
   return (
     <main className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 50%, #0d0a0a 100%)" }}>
       {/* Nav */}
@@ -11,13 +14,27 @@ export default function Home() {
           <span className="text-2xl">⚔️</span>
           <span className="text-xl font-bold text-gold" style={{ letterSpacing: "0.1em" }}>THE DUNGEON FORGE</span>
         </div>
-        <div className="flex gap-4">
-          <Link href="/campaign/new">
-            <button className="btn-secondary text-sm">New Campaign</button>
+        <div className="flex items-center gap-3">
+          <Link href="/pricing">
+            <button className="btn-secondary text-sm">Pricing</button>
           </Link>
-          <Link href="/campaigns">
-            <button className="btn-primary text-sm">My Campaigns</button>
-          </Link>
+          {isLoaded && user ? (
+            <>
+              <Link href="/campaigns">
+                <button className="btn-primary text-sm">My Campaigns</button>
+              </Link>
+              <UserButton />
+            </>
+          ) : (
+            <>
+              <Link href="/sign-in">
+                <button className="btn-secondary text-sm">Sign In</button>
+              </Link>
+              <Link href="/sign-up">
+                <button className="btn-primary text-sm">Get Started</button>
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
