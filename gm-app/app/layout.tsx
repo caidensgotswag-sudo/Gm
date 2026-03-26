@@ -15,7 +15,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('dungeon_forge_theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();` }} />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

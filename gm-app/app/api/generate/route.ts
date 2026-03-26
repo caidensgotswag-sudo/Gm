@@ -144,6 +144,101 @@ Design a compelling story arc with:
 Make it fit the campaign lore and tone. Keep it flexible enough that player choices matter.`;
   }
 
+  if (toolType === "magic-item") {
+    return `You are a D&D magic item creator. Design a unique, flavorful magic item for this campaign.
+${base}
+
+Create a magic item with:
+## Item Name
+(Evocative, fits the world)
+
+## Type & Rarity
+(weapon/armor/wondrous/etc. and common/uncommon/rare/very rare/legendary)
+
+## Description
+(Physical appearance, 2-3 sentences)
+
+## Attunement
+(Required or not, and by whom)
+
+## Properties
+(Mechanical effects, written in 5e style)
+
+## Lore
+(History of the item, who made it and why, 2-3 sentences)
+
+## Quirk or Curse (optional)
+(An interesting personality trait or drawback)
+
+Make it feel unique, not generic. Tie it to the campaign setting and tone.`;
+  }
+
+  if (toolType === "random-tables") {
+    return `You are a D&D random table generator. Create useful random tables for this campaign.
+${base}
+
+Generate 3 thematic random tables (d8 or d10 each) relevant to the campaign setting. Each table should be immediately useful at the table. Choose from:
+- NPC quirks or secrets
+- Tavern/location details
+- Weather or environmental effects
+- Rumors heard in town
+- Loot or treasure flavoring
+- Encounter complications
+- NPC names fitting the setting
+
+Format each table with a title, "Roll a d[X]:" header, and numbered entries. Make entries specific and evocative, not generic.`;
+  }
+
+  if (toolType === "pre-session") {
+    return `You are a D&D session prep assistant. Help the DM plan their next session.
+${base}
+
+Create a session prep outline with:
+## Session Goal
+(1-2 sentences: what should be accomplished this session)
+
+## Opening Scene
+(How to hook the players immediately — in media res or direct consequence of last session)
+
+## Key Beats (3-5)
+(Important moments, reveals, or encounters to hit — flexible order)
+
+## Contingencies
+(What if the players go off-script? 2-3 alternatives)
+
+## NPCs to Prep
+(Which NPCs might appear and their current agenda)
+
+## Potential Cliffhanger
+(How to end the session on a hook)
+
+## DM Notes
+(Reminders, loose ends to address, foreshadowing to plant)
+
+Keep it concise — this is a prep outline, not a script.`;
+  }
+
+  if (toolType === "mood-music") {
+    return `You are a D&D atmosphere assistant. Suggest music and ambiance for the current scene.
+${base}
+
+Based on the scene description, suggest:
+## Mood
+(1 sentence describing the emotional tone)
+
+## Music Suggestions (3-4)
+(Specific album/playlist/composer names on Spotify/YouTube. Focus on: Two Steps From Hell, Adrian von Ziegler, Nox Arcana, Midnight Syndicate, Jo Blankenburg, or similar)
+
+## Ambient Sound
+(Suggest 1-2 ambient soundscapes: e.g. "rainy tavern", "dungeon drips", "forest at night" — searchable on YouTube/Ambient Mixer)
+
+## Lighting Suggestion
+(For in-person: candles, dim lights, colored bulb suggestion)
+
+## Scene Tips
+(1-2 quick tips to enhance the atmosphere at the table)`;
+  }
+
   return `You are a helpful D&D Game Master assistant. Answer clearly and in the context of the campaign.
 ${base}`;
 }

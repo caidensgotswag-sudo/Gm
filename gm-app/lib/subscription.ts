@@ -24,6 +24,11 @@ export interface Plan {
   canWorldLore: boolean;
   canArcPlanner: boolean;
   canHomebrew: boolean;
+  canQuestTrack: boolean;
+  canNPCTrack: boolean;
+  canTimeline: boolean;
+  canFactionTrack: boolean;
+  canPlayerPortal: boolean;
 }
 
 export const PLANS: Plan[] = [
@@ -50,6 +55,11 @@ export const PLANS: Plan[] = [
     canWorldLore: false,
     canArcPlanner: false,
     canHomebrew: false,
+    canQuestTrack: false,
+    canNPCTrack: false,
+    canTimeline: false,
+    canFactionTrack: false,
+    canPlayerPortal: false,
   },
   {
     id: "adventurer",
@@ -77,6 +87,11 @@ export const PLANS: Plan[] = [
     canWorldLore: false,
     canArcPlanner: false,
     canHomebrew: false,
+    canQuestTrack: true,
+    canNPCTrack: false,
+    canTimeline: false,
+    canFactionTrack: false,
+    canPlayerPortal: false,
     stripePriceId: process.env.STRIPE_ADVENTURER_PRICE_ID,
   },
   {
@@ -106,6 +121,11 @@ export const PLANS: Plan[] = [
     canWorldLore: false,
     canArcPlanner: false,
     canHomebrew: false,
+    canQuestTrack: true,
+    canNPCTrack: true,
+    canTimeline: true,
+    canFactionTrack: false,
+    canPlayerPortal: true,
     stripePriceId: process.env.STRIPE_MASTER_PRICE_ID,
   },
   {
@@ -135,6 +155,11 @@ export const PLANS: Plan[] = [
     canWorldLore: true,
     canArcPlanner: true,
     canHomebrew: true,
+    canQuestTrack: true,
+    canNPCTrack: true,
+    canTimeline: true,
+    canFactionTrack: true,
+    canPlayerPortal: true,
     stripePriceId: process.env.STRIPE_LEGEND_PRICE_ID,
   },
 ];

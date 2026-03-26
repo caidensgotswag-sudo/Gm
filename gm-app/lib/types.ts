@@ -10,6 +10,46 @@ export interface PartyMember {
   notes: string;
 }
 
+export interface Quest {
+  id: string;
+  title: string;
+  description: string;
+  status: "active" | "completed" | "failed";
+  reward?: string;
+  createdAt: string;
+}
+
+export interface TrackedNPC {
+  id: string;
+  name: string;
+  race: string;
+  role: string;
+  location: string;
+  relationship: "friendly" | "neutral" | "hostile" | "unknown";
+  description: string;
+  notes: string;
+  firstMet: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  title: string;
+  description: string;
+  sessionId?: string;
+  sessionTitle?: string;
+  ingameDate?: string;
+  createdAt: string;
+}
+
+export interface Faction {
+  id: string;
+  name: string;
+  description: string;
+  reputation: number; // -100 to 100
+  goal: string;
+  notes: string;
+}
+
 export interface Campaign {
   id: string;
   name: string;
@@ -21,6 +61,10 @@ export interface Campaign {
   homebrewRules: string;
   notes: string;
   party: PartyMember[];
+  quests: Quest[];
+  npcs: TrackedNPC[];
+  timeline: TimelineEvent[];
+  factions: Faction[];
   createdAt: string;
   sessions: Session[];
 }
@@ -47,4 +91,16 @@ export interface InitiativeCombatant {
   hp: number;
   maxHp: number;
   isPlayer: boolean;
+  conditions: string[];
+}
+
+export interface SharedCampaignData {
+  name: string;
+  setting: string;
+  tone: string;
+  partyLevel: number;
+  party: Pick<PartyMember, "name" | "race" | "class" | "level">[];
+  quests: Pick<Quest, "title" | "description" | "status">[];
+  recaps: { sessionTitle: string; recap: string }[];
+  updatedAt: string;
 }

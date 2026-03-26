@@ -44,6 +44,27 @@ body {
   margin: 1rem 0;
 }
 
+/* Light theme overrides */
+[data-theme="light"] body {
+  background: #f0e6d0;
+  color: #2c1810;
+}
+[data-theme="light"] .card-parchment {
+  background: linear-gradient(135deg, #fffaf0 0%, #f5ead8 100%);
+  border: 1px solid rgba(139, 90, 20, 0.3);
+}
+[data-theme="light"] .input-fantasy {
+  background: rgba(255,255,255,0.6);
+  border-color: rgba(139,90,20,0.4);
+  color: #2c1810;
+}
+[data-theme="light"] .input-fantasy::placeholder { color: rgba(44,24,16,0.35); }
+[data-theme="light"] .msg-dm { background: #fff8ee; border-left-color: #8b0000; }
+[data-theme="light"] .msg-player { background: #eef4ff; border-left-color: #2a5c8a; }
+[data-theme="light"] .btn-secondary { color: #8b5a14; border-color: rgba(139,90,20,0.5); }
+[data-theme="light"] .btn-secondary:hover { background: rgba(139,90,20,0.1); }
+[data-theme="light"] ::-webkit-scrollbar-track { background: #f0e6d0; }
+
 /* Parchment card */
 .card-parchment {
   background: linear-gradient(135deg, #2a2020 0%, #1e1818 100%);
