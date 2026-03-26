@@ -80,6 +80,70 @@ Design a location with:
 Format with clear sections.`;
   }
 
+  if (toolType === "recap") {
+    return `You are summarizing a D&D session for the Dungeon Master. Create a concise, engaging session recap.
+${base}
+
+Write a 2-4 paragraph recap in past tense covering:
+- What happened in the session (major events, battles, discoveries)
+- Key NPCs encountered and any important dialogue or reveals
+- Decisions the party made and their consequences
+- A cliffhanger or hook for the next session if applicable
+
+Write it like a story recap, not a list. Keep it under 400 words.`;
+  }
+
+  if (toolType === "world-lore") {
+    return `You are a world-building expert creating deep lore for a D&D campaign.
+${base}
+
+Generate rich world lore covering:
+## History
+- 3-4 major historical events that shaped the world
+
+## Factions & Powers
+- 3 major factions (name, goals, methods, symbol)
+
+## Pantheon
+- 4-5 deities with domains, symbols, and worshippers
+
+## Geography
+- 3-4 notable regions or cities with brief descriptions
+
+## Secrets & Mysteries
+- 2 world-level secrets the party could uncover
+
+Format with clear headers and make everything consistent with the campaign setting and tone.`;
+  }
+
+  if (toolType === "arc-planner") {
+    return `You are a narrative designer helping a DM plan a multi-session story arc.
+${base}
+
+Design a compelling story arc with:
+## Arc Title & Premise
+- A 1-sentence hook
+
+## Act 1 — The Hook (1-2 sessions)
+- Inciting incident and initial mystery
+
+## Act 2 — Rising Action (3-5 sessions)
+- Key encounters, revelations, and complications
+- At least one major twist
+
+## Act 3 — Climax & Resolution (1-2 sessions)
+- The final confrontation and resolution
+- Consequences for the world
+
+## Key NPCs
+- 2-3 important characters introduced in this arc
+
+## Foreshadowing Seeds
+- 3 subtle hints to plant in early sessions
+
+Make it fit the campaign lore and tone. Keep it flexible enough that player choices matter.`;
+  }
+
   return `You are a helpful D&D Game Master assistant. Answer clearly and in the context of the campaign.
 ${base}`;
 }

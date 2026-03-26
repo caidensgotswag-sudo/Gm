@@ -2,15 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { saveCampaign } from "@/lib/storage";
 import type { Campaign } from "@/lib/types";
+import Navbar from "@/app/components/Navbar";
 
 const TONES = ["High Fantasy", "Dark & Gritty", "Heroic Epic", "Horror", "Political Intrigue", "Swashbuckling", "Cosmic Horror"];
 const SETTINGS = ["Forgotten Realms", "Eberron", "Homebrew World", "Ancient Rome", "Dark Ages", "Steampunk", "Post-Apocalyptic Fantasy", "Underwater", "Planar/Multiverse"];
 
 export default function NewCampaignPage() {
   const router = useRouter();
+  const { user } = useUser();
+  const userId = user?.id;
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     name: "",
@@ -29,10 +33,13 @@ export default function NewCampaignPage() {
     const campaign: Campaign = {
       id: crypto.randomUUID(),
       ...form,
+      notes: "",
+      homebrewRules: "",
+      party: [],
       createdAt: new Date().toISOString(),
       sessions: [],
     };
-    saveCampaign(campaign);
+    saveCampaign(campaign, userId);
     router.push(`/campaigns/${campaign.id}`);
   }
 
@@ -41,11 +48,12 @@ export default function NewCampaignPage() {
   const canCreate = form.lore.trim().length > 0;
 
   return (
-    <main className="min-h-screen px-4 py-10" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 100%)" }}>
-      <div className="max-w-2xl mx-auto">
+    <main className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 100%)" }}>
+      <Navbar />
+      <div className="max-w-2xl mx-auto w-full px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/" className="text-gold opacity-60 hover:opacity-100 transition-opacity">← Back</Link>
+          <Link href="/campaigns" className="text-gold opacity-60 hover:opacity-100 transition-opacity">← Campaigns</Link>
           <h1 className="text-3xl font-bold text-gold">Forge a New Campaign</h1>
         </div>
 

@@ -2,50 +2,47 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { getCampaigns, deleteCampaign } from "@/lib/storage";
 import { getPlan, canCreateCampaign } from "@/lib/subscription";
 import type { Campaign } from "@/lib/types";
 import type { PlanId } from "@/lib/subscription";
+import Navbar from "@/app/components/Navbar";
 
 export default function CampaignsPage() {
   const { user } = useUser();
+  const userId = user?.id;
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const planId = (user?.publicMetadata?.planId as PlanId) ?? "free";
   const plan = getPlan(planId);
 
   useEffect(() => {
-    setCampaigns(getCampaigns());
+    setCampaigns(getCampaigns(userId));
   }, []);
 
   function handleDelete(id: string) {
     if (!confirm("Delete this campaign? This cannot be undone.")) return;
-    deleteCampaign(id);
-    setCampaigns(getCampaigns());
+    deleteCampaign(id, userId);
+    setCampaigns(getCampaigns(userId));
   }
 
   const canAdd = canCreateCampaign(plan, campaigns.length);
 
   return (
-    <main className="min-h-screen px-4 py-10" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 100%)" }}>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-gold opacity-60 hover:opacity-100 transition-opacity">← Home</Link>
-            <h1 className="text-3xl font-bold text-gold">My Campaigns</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            {canAdd ? (
-              <Link href="/campaign/new">
-                <button className="btn-primary">⚔️ New Campaign</button>
-              </Link>
-            ) : (
-              <Link href="/pricing">
-                <button className="btn-primary">⚡ Upgrade to Add More</button>
-              </Link>
-            )}
-            <Link href="/account"><UserButton /></Link>
-          </div>
+    <main className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 100%)" }}>
+      <Navbar />
+      <div className="max-w-4xl mx-auto w-full px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-gold">My Campaigns</h1>
+          {canAdd ? (
+            <Link href="/campaign/new">
+              <button className="btn-primary">⚔️ New Campaign</button>
+            </Link>
+          ) : (
+            <Link href="/pricing">
+              <button className="btn-primary">⚡ Upgrade to Add More</button>
+            </Link>
+          )}
         </div>
 
         {/* Plan limit warning */}

@@ -1,4 +1,4 @@
-export type PlanId = "free" | "adventurer" | "master";
+export type PlanId = "free" | "adventurer" | "master" | "legend";
 
 export interface Plan {
   id: PlanId;
@@ -8,12 +8,22 @@ export interface Plan {
   description: string;
   features: string[];
   limits: {
-    campaigns: number; // -1 = unlimited
-    aiMessagesPerDay: number; // -1 = unlimited
-    toolGenerationsPerDay: number; // -1 = unlimited
+    campaigns: number;      // -1 = unlimited
+    aiMessagesPerDay: number;
+    toolGenerationsPerDay: number;
   };
   badge?: string;
   stripePriceId?: string;
+  // Feature flags
+  canPartyTrack: boolean;
+  canNotes: boolean;
+  canDiceRoller: boolean;
+  canInitiative: boolean;
+  canRecap: boolean;
+  canExport: boolean;
+  canWorldLore: boolean;
+  canArcPlanner: boolean;
+  canHomebrew: boolean;
 }
 
 export const PLANS: Plan[] = [
@@ -27,10 +37,19 @@ export const PLANS: Plan[] = [
       "1 campaign",
       "10 AI messages per day",
       "5 tool generations per day",
-      "Session history",
+      "Live session runner",
       "NPC, encounter & dungeon tools",
     ],
     limits: { campaigns: 1, aiMessagesPerDay: 10, toolGenerationsPerDay: 5 },
+    canPartyTrack: false,
+    canNotes: false,
+    canDiceRoller: true,
+    canInitiative: false,
+    canRecap: false,
+    canExport: false,
+    canWorldLore: false,
+    canArcPlanner: false,
+    canHomebrew: false,
   },
   {
     id: "adventurer",
@@ -43,11 +62,21 @@ export const PLANS: Plan[] = [
       "5 campaigns",
       "Unlimited AI messages",
       "Unlimited tool generations",
-      "Session history & export",
-      "All GM tools",
-      "Priority support",
+      "Party tracker",
+      "Campaign notes",
+      "Initiative tracker",
+      "All core GM tools",
     ],
     limits: { campaigns: 5, aiMessagesPerDay: -1, toolGenerationsPerDay: -1 },
+    canPartyTrack: true,
+    canNotes: true,
+    canDiceRoller: true,
+    canInitiative: true,
+    canRecap: false,
+    canExport: false,
+    canWorldLore: false,
+    canArcPlanner: false,
+    canHomebrew: false,
     stripePriceId: process.env.STRIPE_ADVENTURER_PRICE_ID,
   },
   {
@@ -55,20 +84,58 @@ export const PLANS: Plan[] = [
     name: "Dungeon Master",
     price: 12,
     priceLabel: "$12 / month",
-    description: "The full forge. Unlimited power for serious storytellers.",
+    description: "The full forge. Unlimited campaigns and powerful session tools.",
     badge: "Best Value",
     features: [
       "Unlimited campaigns",
       "Unlimited AI messages",
-      "Unlimited tool generations",
-      "Session export (PDF coming soon)",
+      "Party tracker & notes",
+      "Initiative tracker",
+      "AI session recaps",
+      "Session export",
       "All GM tools",
-      "Homebrew rules support",
       "Priority AI responses",
-      "Early access to new features",
     ],
     limits: { campaigns: -1, aiMessagesPerDay: -1, toolGenerationsPerDay: -1 },
+    canPartyTrack: true,
+    canNotes: true,
+    canDiceRoller: true,
+    canInitiative: true,
+    canRecap: true,
+    canExport: true,
+    canWorldLore: false,
+    canArcPlanner: false,
+    canHomebrew: false,
     stripePriceId: process.env.STRIPE_MASTER_PRICE_ID,
+  },
+  {
+    id: "legend",
+    name: "Legend",
+    price: 25,
+    priceLabel: "$25 / month",
+    description: "The ultimate storyteller's toolkit. Every feature, no limits.",
+    badge: "Ultimate",
+    features: [
+      "Everything in Dungeon Master",
+      "World lore generator",
+      "Multi-session arc planner",
+      "Homebrew rules AI",
+      "Custom DM voice & style",
+      "Faction & NPC relationship tracker",
+      "Early access to all new features",
+      "Priority support",
+    ],
+    limits: { campaigns: -1, aiMessagesPerDay: -1, toolGenerationsPerDay: -1 },
+    canPartyTrack: true,
+    canNotes: true,
+    canDiceRoller: true,
+    canInitiative: true,
+    canRecap: true,
+    canExport: true,
+    canWorldLore: true,
+    canArcPlanner: true,
+    canHomebrew: true,
+    stripePriceId: process.env.STRIPE_LEGEND_PRICE_ID,
   },
 ];
 

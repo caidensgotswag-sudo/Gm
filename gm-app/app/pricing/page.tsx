@@ -1,10 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { PLANS } from "@/lib/subscription";
+import Navbar from "@/app/components/Navbar";
+
+const FEATURE_ROWS = [
+  { label: "Campaigns", values: ["1", "5", "Unlimited", "Unlimited"] },
+  { label: "AI messages / day", values: ["10", "Unlimited", "Unlimited", "Unlimited"] },
+  { label: "Tool generations / day", values: ["5", "Unlimited", "Unlimited", "Unlimited"] },
+  { label: "Live session runner", values: [true, true, true, true] },
+  { label: "Dice roller", values: [true, true, true, true] },
+  { label: "NPC / encounter / dungeon tools", values: [true, true, true, true] },
+  { label: "Party tracker", values: [false, true, true, true] },
+  { label: "Campaign notes", values: [false, true, true, true] },
+  { label: "Initiative tracker", values: [false, true, true, true] },
+  { label: "AI session recaps", values: [false, false, true, true] },
+  { label: "Session export", values: [false, false, true, true] },
+  { label: "World lore generator", values: [false, false, false, true] },
+  { label: "Arc planner", values: [false, false, false, true] },
+  { label: "Homebrew rules AI", values: [false, false, false, true] },
+  { label: "Priority AI responses", values: [false, false, true, true] },
+];
 
 export default function PricingPage() {
   const { user, isLoaded } = useUser();
@@ -15,8 +33,7 @@ export default function PricingPage() {
   async function handleSubscribe(planId: string, stripePriceId?: string) {
     if (!isLoaded) return;
     if (!user) { router.push("/sign-up"); return; }
-    if (planId === "free") return;
-    if (!stripePriceId) return;
+    if (planId === "free" || !stripePriceId) return;
 
     setLoadingPlan(planId);
     try {
@@ -40,165 +57,137 @@ export default function PricingPage() {
     if (url) window.location.href = url;
   }
 
+  const planColors = ["rgba(255,255,255,0.05)", "rgba(42,92,138,0.2)", "rgba(139,0,0,0.2)", "rgba(120,80,200,0.2)"];
+  const planBorderColors = ["rgba(255,255,255,0.1)", "rgba(42,92,138,0.5)", "var(--gold)", "rgba(160,100,255,0.7)"];
+
   return (
     <main className="min-h-screen" style={{ background: "linear-gradient(180deg, #0d0a0a 0%, #1a1010 100%)" }}>
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-8 py-4 border-b" style={{ borderColor: "rgba(201,168,76,0.2)" }}>
-        <Link href="/" className="flex items-center gap-3">
-          <span className="text-2xl">⚔️</span>
-          <span className="text-xl font-bold text-gold" style={{ letterSpacing: "0.1em" }}>THE DUNGEON FORGE</span>
-        </Link>
-        <div className="flex gap-3">
-          {user ? (
-            <>
-              <Link href="/campaigns"><button className="btn-secondary text-sm">My Campaigns</button></Link>
-              <button className="btn-secondary text-sm" onClick={handleManageBilling}>Manage Billing</button>
-            </>
-          ) : (
-            <>
-              <Link href="/sign-in"><button className="btn-secondary text-sm">Sign In</button></Link>
-              <Link href="/sign-up"><button className="btn-primary text-sm">Sign Up</button></Link>
-            </>
-          )}
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Header */}
-      <section className="text-center px-6 pt-16 pb-12">
+      <section className="text-center px-6 pt-14 pb-10">
         <div className="text-5xl mb-4">💎</div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gold mb-4" style={{ letterSpacing: "0.05em" }}>
-          Choose Your Tier
-        </h1>
-        <p className="text-lg max-w-xl mx-auto" style={{ color: "rgba(245,230,200,0.5)" }}>
+        <h1 className="text-4xl md:text-5xl font-bold text-gold mb-3" style={{ letterSpacing: "0.05em" }}>Choose Your Tier</h1>
+        <p className="text-lg max-w-xl mx-auto" style={{ color: "rgba(245,230,200,0.45)" }}>
           Every great adventure starts somewhere. Upgrade whenever you&apos;re ready to forge more.
         </p>
       </section>
 
-      {/* Plans */}
-      <section className="px-6 pb-20 max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          {PLANS.map((plan) => {
+      {/* Plan cards */}
+      <section className="px-4 pb-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {PLANS.map((plan, idx) => {
             const isCurrentPlan = currentPlan === plan.id;
-            const isPopular = plan.badge === "Popular";
-            const isBestValue = plan.badge === "Best Value";
             const isLoading = loadingPlan === plan.id;
 
             return (
-              <div
-                key={plan.id}
-                className="card-parchment p-6 flex flex-col fade-in relative"
-                style={{
-                  border: isPopular
-                    ? "2px solid var(--gold)"
-                    : isBestValue
-                    ? "2px solid var(--blood)"
-                    : "1px solid rgba(201,168,76,0.2)",
-                  transform: isPopular ? "scale(1.03)" : "none",
-                }}
-              >
-                {/* Badge */}
+              <div key={plan.id} className="flex flex-col p-5 rounded-lg relative fade-in"
+                style={{ background: planColors[idx], border: `1.5px solid ${planBorderColors[idx]}` }}>
                 {plan.badge && (
-                  <div
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full"
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap"
                     style={{
-                      background: isPopular ? "var(--gold)" : "var(--blood)",
-                      color: isPopular ? "var(--ink)" : "var(--gold-light)",
-                      letterSpacing: "0.08em",
-                    }}
-                  >
+                      background: plan.id === "legend" ? "rgba(160,100,255,0.9)" : plan.id === "master" ? "var(--gold)" : "#2a5c8a",
+                      color: plan.id === "master" ? "var(--ink)" : "white",
+                      letterSpacing: "0.06em",
+                    }}>
                     {plan.badge}
                   </div>
                 )}
 
-                {/* Plan header */}
-                <div className="mb-5">
-                  <h2 className="text-xl font-bold text-gold mb-1">{plan.name}</h2>
-                  <div className="text-3xl font-bold mb-1" style={{ color: "rgba(245,230,200,0.95)" }}>
-                    {plan.price === 0 ? "Free" : `$${plan.price}`}
-                    {plan.price > 0 && <span className="text-base font-normal" style={{ color: "rgba(245,230,200,0.4)" }}>/mo</span>}
-                  </div>
-                  <p className="text-sm" style={{ color: "rgba(245,230,200,0.45)" }}>{plan.description}</p>
+                <h2 className="text-lg font-bold text-gold mb-1">{plan.name}</h2>
+                <div className="text-3xl font-bold mb-1" style={{ color: "rgba(245,230,200,0.95)" }}>
+                  {plan.price === 0 ? "Free" : `$${plan.price}`}
+                  {plan.price > 0 && <span className="text-sm font-normal" style={{ color: "rgba(245,230,200,0.35)" }}>/mo</span>}
                 </div>
+                <p className="text-xs mb-4" style={{ color: "rgba(245,230,200,0.4)", lineHeight: "1.5" }}>{plan.description}</p>
 
-                <hr className="divider" />
-
-                {/* Features */}
-                <ul className="flex-1 space-y-2 mb-6 mt-4">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm" style={{ color: "rgba(245,230,200,0.7)" }}>
-                      <span className="text-gold mt-0.5">✓</span>
-                      {feature}
+                <ul className="flex-1 space-y-1.5 mb-5">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-xs" style={{ color: "rgba(245,230,200,0.65)" }}>
+                      <span className="text-gold mt-0.5 shrink-0">✓</span>{f}
                     </li>
                   ))}
                 </ul>
 
-                {/* Limits callout */}
-                <div className="rounded p-3 mb-5 text-xs space-y-1" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ color: "rgba(245,230,200,0.4)" }}>
-                    Campaigns: <span style={{ color: "var(--gold)" }}>{plan.limits.campaigns === -1 ? "Unlimited" : plan.limits.campaigns}</span>
-                  </div>
-                  <div style={{ color: "rgba(245,230,200,0.4)" }}>
-                    AI messages/day: <span style={{ color: "var(--gold)" }}>{plan.limits.aiMessagesPerDay === -1 ? "Unlimited" : plan.limits.aiMessagesPerDay}</span>
-                  </div>
-                  <div style={{ color: "rgba(245,230,200,0.4)" }}>
-                    Tool uses/day: <span style={{ color: "var(--gold)" }}>{plan.limits.toolGenerationsPerDay === -1 ? "Unlimited" : plan.limits.toolGenerationsPerDay}</span>
-                  </div>
-                </div>
-
-                {/* CTA */}
                 {isCurrentPlan ? (
-                  <button className="btn-secondary w-full" disabled style={{ opacity: 0.6, cursor: "default" }}>
-                    ✓ Current Plan
-                  </button>
+                  <div className="space-y-2">
+                    <button className="btn-secondary w-full text-sm" disabled style={{ opacity: 0.5, cursor: "default" }}>✓ Current Plan</button>
+                    {plan.id !== "free" && (
+                      <button className="w-full text-xs py-1" style={{ color: "rgba(245,230,200,0.3)" }} onClick={handleManageBilling}>
+                        Manage billing →
+                      </button>
+                    )}
+                  </div>
                 ) : plan.id === "free" ? (
-                  <Link href={user ? "/campaigns" : "/sign-up"}>
-                    <button className="btn-secondary w-full">Get Started Free</button>
-                  </Link>
+                  <button className="btn-secondary w-full text-sm" onClick={() => router.push(user ? "/campaigns" : "/sign-up")}>
+                    Get Started Free
+                  </button>
                 ) : (
-                  <button
-                    className="btn-primary w-full"
-                    onClick={() => handleSubscribe(plan.id, plan.stripePriceId)}
-                    disabled={isLoading}
-                    style={{ opacity: isLoading ? 0.6 : 1 }}
-                  >
-                    {isLoading ? "Redirecting..." : `Upgrade to ${plan.name}`}
+                  <button className="btn-primary w-full text-sm" onClick={() => handleSubscribe(plan.id, plan.stripePriceId)}
+                    disabled={isLoading} style={{ opacity: isLoading ? 0.6 : 1 }}>
+                    {isLoading ? "Redirecting..." : `Upgrade →`}
                   </button>
                 )}
               </div>
             );
           })}
         </div>
+      </section>
 
-        {/* FAQ */}
-        <div className="mt-16 max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold text-gold text-center mb-8" style={{ letterSpacing: "0.05em" }}>
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-4">
-            {[
-              {
-                q: "Can I cancel anytime?",
-                a: "Yes. Cancel from your account page at any time. You keep access until the end of your billing period.",
-              },
-              {
-                q: "What counts as an AI message?",
-                a: "Each time the Dungeon Master AI responds during a session counts as one message. Tool generations (NPCs, encounters, dungeons) have their own separate limit.",
-              },
-              {
-                q: "Is my campaign data safe?",
-                a: "Campaigns are stored locally in your browser. We don't store your story content on our servers — just your account and subscription status.",
-              },
-              {
-                q: "Can I upgrade or downgrade later?",
-                a: "Absolutely. Upgrade or downgrade at any time from your account page. Billing is prorated automatically by Stripe.",
-              },
-            ].map((item) => (
-              <div key={item.q} className="card-parchment p-5">
-                <h3 className="font-bold text-gold mb-2 text-sm">{item.q}</h3>
-                <p className="text-sm" style={{ color: "rgba(245,230,200,0.55)", lineHeight: "1.6" }}>{item.a}</p>
-              </div>
-            ))}
-          </div>
+      {/* Feature comparison table */}
+      <section className="px-4 pb-16 max-w-5xl mx-auto">
+        <h2 className="text-xl font-bold text-gold text-center mb-6" style={{ letterSpacing: "0.06em" }}>FULL COMPARISON</h2>
+        <div className="card-parchment overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
+                <th className="text-left py-3 px-4 font-normal" style={{ color: "rgba(245,230,200,0.4)", width: "40%" }}>Feature</th>
+                {PLANS.map((p) => (
+                  <th key={p.id} className="text-center py-3 px-3 font-bold text-gold" style={{ width: "15%" }}>
+                    {p.name}
+                    {currentPlan === p.id && <div className="text-xs font-normal" style={{ color: "rgba(201,168,76,0.5)" }}>← you</div>}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {FEATURE_ROWS.map((row, i) => (
+                <tr key={row.label} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", background: i % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent" }}>
+                  <td className="py-2.5 px-4" style={{ color: "rgba(245,230,200,0.6)" }}>{row.label}</td>
+                  {row.values.map((val, j) => (
+                    <td key={j} className="py-2.5 px-3 text-center">
+                      {typeof val === "boolean" ? (
+                        val
+                          ? <span style={{ color: "var(--gold)" }}>✓</span>
+                          : <span style={{ color: "rgba(255,255,255,0.15)" }}>—</span>
+                      ) : (
+                        <span style={{ color: "rgba(245,230,200,0.7)" }}>{val}</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="px-4 pb-20 max-w-2xl mx-auto">
+        <h2 className="text-xl font-bold text-gold text-center mb-6" style={{ letterSpacing: "0.06em" }}>FAQ</h2>
+        <div className="space-y-3">
+          {[
+            { q: "Can I cancel anytime?", a: "Yes. Cancel from your account page at any time. You keep access until the end of your billing period." },
+            { q: "What counts as an AI message?", a: "Each DM response in a live session counts as one message. Tool uses (NPC gen, dungeon builder, etc.) have their own separate counter." },
+            { q: "Is my campaign data safe?", a: "Campaigns are stored in your browser's localStorage. We don't store your story content on our servers — only your account and subscription status." },
+            { q: "Can I upgrade or downgrade?", a: "Yes, anytime from your account page. Stripe handles proration automatically so you're never double-charged." },
+            { q: "What's the difference between Dungeon Master and Legend?", a: "Legend unlocks the advanced AI worldbuilding suite: world lore generator, arc planner, homebrew rules AI, and faction tracking. Perfect for long-running campaigns." },
+          ].map((item) => (
+            <div key={item.q} className="card-parchment p-4">
+              <h3 className="font-bold text-gold text-sm mb-1">{item.q}</h3>
+              <p className="text-xs leading-relaxed" style={{ color: "rgba(245,230,200,0.5)" }}>{item.a}</p>
+            </div>
+          ))}
         </div>
       </section>
     </main>
